@@ -17,7 +17,7 @@ from agent.prompts import (
 )
 from agent.tools import TOOLS
 from config import get_settings
-from services.docker_executor import DockerExecutor
+from services.sandbox_executor import SandboxExecutor
 from services.storage import download_data_file, get_cached_path
 
 logger = logging.getLogger("data-agent.loop")
@@ -28,7 +28,7 @@ async def run_analysis(
     question: str,
     user_id: str,
     data_source: dict,
-    docker_executor: DockerExecutor,
+    sandbox_executor: SandboxExecutor,
 ) -> dict:
     """
     Full agent analysis loop:
@@ -144,8 +144,8 @@ async def run_analysis(
             func_args.get("reasoning", "")[:100],
         )
 
-        # 6. Execute in Docker
-        last_result = await docker_executor.execute(
+        # 6. Execute in sandbox
+        last_result = await sandbox_executor.execute(
             code=code,
             data_file_path=data_file_path,
             file_format=file_format,

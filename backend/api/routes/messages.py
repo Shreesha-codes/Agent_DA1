@@ -45,17 +45,6 @@ async def send_message(
             "error": {"code": "PROFILING_INCOMPLETE", "message": "Data source profiling is not complete"}
         })
 
-    # Check Docker availability
-    try:
-        import docker
-        client = docker.from_env()
-        client.ping()
-        client.close()
-    except Exception:
-        raise HTTPException(status_code=503, detail={
-            "error": {"code": "DOCKER_UNAVAILABLE", "message": "Docker daemon is not running. Code execution is unavailable."}
-        })
-
     # Get next turn index
     turn_index = await queries.get_next_turn_index(session_id)
 
@@ -78,9 +67,9 @@ async def send_message(
     # Run agent analysis loop
     try:
         from agent.loop import run_analysis
-        from services.docker_executor import DockerExecutor
+        from services.sandbox_executor import SandboxExecutor
 
-        executor = DockerExecutor()
+        executor = SandboxExecutor()
         agent_result = await run_analysis(
             session_id=session_id,
             question=question,

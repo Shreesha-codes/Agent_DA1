@@ -32,16 +32,6 @@ async def lifespan(app: FastAPI):
     os.makedirs(settings.DATA_CACHE_DIR, exist_ok=True)
     logger.info("Data cache directory ready: %s", settings.DATA_CACHE_DIR)
 
-    # Check Docker availability (non-blocking — app still starts if Docker is down)
-    try:
-        import docker
-        client = docker.from_env()
-        client.ping()
-        logger.info("Docker daemon is available")
-        client.close()
-    except Exception as e:
-        logger.warning("Docker daemon not available: %s (sandbox execution will fail)", e)
-
     logger.info("Backend started in %s mode", settings.ENVIRONMENT)
     yield
     logger.info("Backend shutting down")
@@ -76,17 +66,7 @@ app.include_router(messages.router, prefix="/api", tags=["Messages"])
 @app.get("/health", tags=["Health"])
 async def health_check():
     """Health check endpoint — no auth required."""
-    health = {"status": "ok", "docker": "unknown", "database": "unknown"}
-
-    # Check Docker
-    try:
-        import docker
-        client = docker.from_env()
-        client.ping()
-        health["docker"] = "available"
-        client.close()
-    except Exception:
-        health["docker"] = "unavailable"
+    health = {"status": "ok", "sandbox": "e2b", "database": "unknown"}
 
     # Check Supabase
     try:

@@ -1,11 +1,36 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import { BarChart3, Database, MessageSquare, Shield, Cpu, ChevronRight } from "lucide-react";
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.05,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll(".reveal");
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      revealElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-claude-canvas">
@@ -47,31 +72,31 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Band */}
-      <section className="border-b border-claude-hairline">
+      <section className="border-b border-claude-hairline overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="font-body text-xs font-medium text-claude-primary uppercase tracking-wider mb-4 block">
+              <span className="font-body text-xs font-medium text-claude-primary uppercase tracking-wider mb-4 block reveal reveal-slide-up">
                 Conversational Data Analysis
               </span>
-              <h1 className="font-display text-display-lg text-claude-ink mb-6">
+              <h1 className="font-display text-display-lg text-claude-ink mb-6 reveal reveal-slide-up delay-75">
                 Meet your data analysis agent
               </h1>
-              <p className="font-body text-lg text-claude-body leading-relaxed mb-8 max-w-lg">
+              <p className="font-body text-lg text-claude-body leading-relaxed mb-8 max-w-lg reveal reveal-slide-up delay-150">
                 Ask your database or spreadsheets anything in plain English. Agent_DA writes code, executes it in a secure sandbox, and returns interactive charts and narratives.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 reveal reveal-slide-up delay-200">
                 <SignUpButton mode="modal">
-                  <button className="font-body text-sm font-medium text-white bg-claude-primary px-6 py-3 rounded-md hover:bg-claude-primary-active transition-colors">
+                  <button className="font-body text-sm font-medium text-white bg-claude-primary px-6 py-3 rounded-md hover:bg-claude-primary-active hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
                     Start Analyzing
                   </button>
                 </SignUpButton>
-                <a href="#features" className="font-body text-sm font-medium text-claude-ink px-6 py-3 rounded-md border border-claude-hairline hover:bg-claude-surface-soft transition-colors">
+                <a href="#features" className="font-body text-sm font-medium text-claude-ink px-6 py-3 rounded-md border border-claude-hairline hover:bg-claude-surface-soft hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
                   Learn more
                 </a>
               </div>
             </div>
-            <div className="bg-claude-surface-card rounded-xl p-8 border border-claude-hairline">
+            <div className="bg-claude-surface-card rounded-xl p-8 border border-claude-hairline reveal reveal-slide-left delay-300 hover:shadow-xl hover:scale-[1.01] transition-all duration-500">
               <div className="bg-claude-surface-dark rounded-lg p-5 border border-claude-surface-dark-elevated">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex gap-1.5">
@@ -94,9 +119,9 @@ export default function LandingPage() {
       </section>
 
       {/* Feature Cards */}
-      <section id="features" className="border-b border-claude-hairline">
+      <section id="features" className="border-b border-claude-hairline overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 reveal reveal-slide-up">
             <span className="font-body text-xs font-medium text-claude-primary uppercase tracking-wider">Features</span>
             <h2 className="font-display text-display-md text-claude-ink mt-3">Built for data teams</h2>
             <p className="font-body text-lg text-claude-body mt-4 max-w-2xl mx-auto">
@@ -105,7 +130,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline">
+            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline reveal reveal-slide-up delay-75 hover:shadow-lg hover:-translate-y-1 hover:border-claude-primary/30 transition-all duration-300">
               <div className="h-10 w-10 rounded-md bg-claude-primary/10 flex items-center justify-center mb-5">
                 <Database className="h-5 w-5 text-claude-primary" />
               </div>
@@ -115,7 +140,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline relative">
+            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline relative reveal reveal-slide-up delay-150 hover:shadow-lg hover:-translate-y-1 hover:border-claude-primary/30 transition-all duration-300">
               <span className="absolute top-4 right-4 font-body text-[11px] font-medium text-white bg-claude-primary px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 New
               </span>
@@ -128,7 +153,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline">
+            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline reveal reveal-slide-up delay-200 hover:shadow-lg hover:-translate-y-1 hover:border-claude-primary/30 transition-all duration-300">
               <div className="h-10 w-10 rounded-md bg-claude-primary/10 flex items-center justify-center mb-5">
                 <Shield className="h-5 w-5 text-claude-primary" />
               </div>
@@ -142,10 +167,10 @@ export default function LandingPage() {
       </section>
 
       {/* Dark Mockup Band */}
-      <section id="about" className="border-b border-claude-hairline">
+      <section id="about" className="border-b border-claude-hairline overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
+            <div className="reveal reveal-slide-right">
               <h2 className="font-display text-display-md text-claude-ink mb-6">
                 Enterprise security. No data leakage.
               </h2>
@@ -154,12 +179,12 @@ export default function LandingPage() {
               </p>
               <Link
                 href={isSignedIn ? "/dashboard" : "/sign-up"}
-                className="inline-flex items-center gap-2 font-body text-sm font-medium text-claude-primary hover:text-claude-primary-active transition-colors"
+                className="inline-flex items-center gap-2 font-body text-sm font-medium text-claude-primary hover:text-claude-primary-active hover:translate-x-1 transition-all duration-200"
               >
                 Start analyzing your data <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="bg-claude-surface-dark rounded-xl p-8 border border-claude-surface-dark-elevated">
+            <div className="bg-claude-surface-dark rounded-xl p-8 border border-claude-surface-dark-elevated reveal reveal-slide-left delay-150 hover:shadow-2xl hover:scale-[1.01] transition-all duration-500">
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex gap-1.5">
                   <div className="h-2.5 w-2.5 rounded-full bg-claude-error"></div>
@@ -169,19 +194,19 @@ export default function LandingPage() {
                 <span className="font-mono text-[10px] text-claude-on-dark-soft ml-2">docker_sandbox</span>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4 hover:bg-claude-surface-dark-elevated transition-colors duration-200">
                   <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">CPU</span>
                   <p className="font-mono text-sm text-claude-on-dark mt-1">1 core</p>
                 </div>
-                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4 hover:bg-claude-surface-dark-elevated transition-colors duration-200">
                   <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">Memory</span>
                   <p className="font-mono text-sm text-claude-on-dark mt-1">512 MB</p>
                 </div>
-                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4 hover:bg-claude-surface-dark-elevated transition-colors duration-200">
                   <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">Network</span>
                   <p className="font-mono text-sm text-claude-on-dark mt-1">Isolated</p>
                 </div>
-                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4 hover:bg-claude-surface-dark-elevated transition-colors duration-200">
                   <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">Timeout</span>
                   <p className="font-mono text-sm text-claude-on-dark mt-1">60s</p>
                 </div>
@@ -194,7 +219,7 @@ export default function LandingPage() {
       {/* Coral CTA Band */}
       <section className="border-b border-claude-hairline">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-16 md:py-20">
-          <div className="bg-claude-primary rounded-xl p-10 md:p-16 text-center">
+          <div className="bg-claude-primary rounded-xl p-10 md:p-16 text-center reveal reveal-scale-up hover:shadow-2xl transition-all duration-500">
             <h2 className="font-display text-display-sm text-white mb-4">
               Ready to analyze your data?
             </h2>
@@ -202,7 +227,7 @@ export default function LandingPage() {
               Connect a dataset and start asking questions in plain English. No setup required.
             </p>
             <SignUpButton mode="modal">
-              <button className="font-body text-sm font-medium text-claude-primary bg-white px-8 py-3 rounded-md hover:bg-claude-hairline transition-colors">
+              <button className="font-body text-sm font-medium text-claude-primary bg-white px-8 py-3 rounded-md hover:bg-claude-hairline hover:-translate-y-0.5 transition-all duration-200">
                 Get Started Free
               </button>
             </SignUpButton>

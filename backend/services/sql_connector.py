@@ -145,7 +145,7 @@ async def fetch_data_snapshot(data_source: dict) -> pd.DataFrame:
         pg_sql.Identifier(table),
     )
 
-    df = pd.read_sql(query, conn)
+    df = pd.read_sql(query.as_string(conn), conn)
     conn.close()
 
     return df

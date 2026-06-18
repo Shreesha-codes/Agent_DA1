@@ -55,13 +55,15 @@ class SandboxExecutor:
 
             timeout_seconds = self.settings.SANDBOX_EXECUTION_TIMEOUT_SECONDS
 
+            # Use python3 on Linux systems where python may not be aliased
+            python_cmd = "python3" if shutil.which("python3") else "python"
             proc = subprocess.run(
-                ["python", script_path],
+                [python_cmd, script_path],
                 cwd=tmp_dir,
                 capture_output=True,
                 text=True,
                 timeout=timeout_seconds,
-                env={"PYTHONIOENCODING": "utf-8"},
+                env={"PYTHONIOENCODING": "utf-8", "PATH": os.environ.get("PATH", "")},
             )
 
             execution_ms = int((time.time() - start_time) * 1000)

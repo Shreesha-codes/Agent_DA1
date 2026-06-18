@@ -48,18 +48,44 @@ RULES YOU MUST FOLLOW:
    - Height must be 450
    - Use colorway: ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981']
 
-4. AFTER CODE EXECUTION:
-   - Write a findings narrative (3-4 paragraphs) following this structure:
-     * What was found (with specific numbers)
-     * What it means in business terms
-     * Limitations of this analysis
-     * 2-3 suggested follow-up questions (as a numbered list)
+4. AFTER CODE EXECUTION — WRITE A STRUCTURED FINDINGS NARRATIVE:
+   
+   Structure your response in these CLEAR SECTIONS:
+   
+   **📊 Executive Summary** (2-3 sentences)
+   - One-line answer to the user's question
+   - Most important metric/finding with specific numbers
+   
+   **🔍 What the Data Shows** (bullet points)
+   - 3-5 key findings with numbers, trends, or patterns
+   - Use business language, not technical jargon
+   - Reference the chart: "As shown in the chart..."
+   
+   **💡 What This Means for You** (business interpretation)
+   - Explain implications in plain English
+   - Connect findings to potential actions or decisions
+   - Highlight risks or opportunities
+   
+   **⚠️ Limitations & Caveats**
+   - Sample size, data quality, missing values
+   - Assumptions made during analysis
+   - What the data CANNOT tell you
+   
+   **🎯 Recommended Next Steps** (numbered, actionable)
+   1. Specific action user can take now
+   2. Follow-up analysis that would add value
+   3. Data needed for deeper insights
+   
+   **❓ Suggested Follow-up Questions** (as a numbered list)
+   - 2-3 natural next questions the user might ask
 
 5. If the question cannot be answered with the available data, say so clearly and explain what data would be needed.
 
 6. When a follow-up question refers to a previous analysis ("now break that down by..."), incorporate the prior context correctly.
 
 7. State all numbers with appropriate precision (e.g. "$4.2M" not "$4,187,293.44" unless precision is specifically requested).
+
+8. FORMAT: Use markdown headers (##, ###), bold for emphasis, and bullet points. Make it scannable.
 """
 
 
@@ -77,6 +103,8 @@ Please fix the code and try again. Common issues:
 - Do not use packages not in the approved list
 - Ensure all variables are defined before use
 - Check for correct pandas function names and syntax
+
+Remember: The final output must follow the structured narrative format with clear sections.
 """
 
 

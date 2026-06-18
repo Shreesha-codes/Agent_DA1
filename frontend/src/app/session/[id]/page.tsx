@@ -14,6 +14,7 @@ import { api } from "../../../lib/api";
 import { DataSource } from "../../../lib/types";
 
 export default function SessionPage() {
+
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
@@ -106,11 +107,10 @@ export default function SessionPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowProfile(!showProfile)}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-body text-sm font-medium transition-colors ${
-                  showProfile
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-body text-sm font-medium transition-colors ${showProfile
                     ? "bg-claude-primary text-white"
                     : "border border-claude-hairline text-claude-muted hover:text-claude-ink bg-white"
-                }`}
+                  }`}
                 title="Toggle Database Profile Panel"
               >
                 {showProfile ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}

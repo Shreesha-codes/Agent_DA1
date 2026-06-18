@@ -116,16 +116,15 @@ export default function UploadPage() {
       pg_table: params.pg_table,
     });
   };
-
   return (
     <PageShell>
       <div className="max-w-3xl mx-auto">
         {/* Page Header */}
-        <div className="flex items-center justify-between border-b border-claude-hairline px-6 py-5">
+        <div className="flex items-center justify-between border-b border-claude-hairline px-6 py-5 animate-fade-in-up">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="font-body text-sm text-claude-muted hover:text-claude-ink rounded-md border border-transparent hover:border-claude-hairline px-3 py-1.5 transition-colors"
+              className="font-body text-sm text-claude-muted hover:text-claude-ink rounded-md border border-transparent hover:border-claude-hairline px-3 py-1.5 hover:-translate-x-0.5 active:translate-y-0 transition-all duration-200"
             >
               &larr; Back
             </Link>
@@ -140,7 +139,7 @@ export default function UploadPage() {
 
         {/* Error notification */}
         {error && (
-          <div className="flex gap-3 mx-6 mt-4 rounded-lg border border-claude-error/20 bg-claude-error/5 p-4">
+          <div className="flex gap-3 mx-6 mt-4 rounded-lg border border-claude-error/20 bg-claude-error/5 p-4 animate-fade-in">
             <AlertCircle className="h-5 w-5 flex-shrink-0 text-claude-error" />
             <div className="font-body text-sm leading-relaxed text-claude-error">
               <p className="font-medium">Registration Failed</p>
@@ -150,14 +149,14 @@ export default function UploadPage() {
         )}
 
         {/* Tab Selectors */}
-        <div className="flex px-6 pt-6 border-b border-claude-hairline">
+        <div className="flex px-6 pt-6 border-b border-claude-hairline animate-fade-in-up" style={{ animationDelay: "100ms" }}>
           <button
             onClick={() => setActiveTab("file")}
             disabled={saving}
-            className={`flex items-center gap-2 px-5 py-2.5 font-body text-sm font-medium rounded-t-lg transition-colors ${
+            className={`flex items-center gap-2 px-5 py-2.5 font-body text-sm font-medium rounded-t-lg transition-all duration-300 ${
               activeTab === "file"
-                ? "border border-claude-hairline border-b-white bg-white text-claude-ink -mb-px"
-                : "text-claude-muted hover:text-claude-ink"
+                ? "border border-claude-hairline border-b-white bg-white text-claude-ink -mb-px shadow-sm"
+                : "text-claude-muted hover:text-claude-ink hover:bg-claude-surface-soft/50"
             }`}
           >
             <FileText className="h-4 w-4" />
@@ -166,10 +165,10 @@ export default function UploadPage() {
           <button
             onClick={() => setActiveTab("postgres")}
             disabled={saving}
-            className={`flex items-center gap-2 px-5 py-2.5 font-body text-sm font-medium rounded-t-lg transition-colors ${
+            className={`flex items-center gap-2 px-5 py-2.5 font-body text-sm font-medium rounded-t-lg transition-all duration-300 ${
               activeTab === "postgres"
-                ? "border border-claude-hairline border-b-white bg-white text-claude-ink -mb-px"
-                : "text-claude-muted hover:text-claude-ink"
+                ? "border border-claude-hairline border-b-white bg-white text-claude-ink -mb-px shadow-sm"
+                : "text-claude-muted hover:text-claude-ink hover:bg-claude-surface-soft/50"
             }`}
           >
             <Server className="h-4 w-4" />
@@ -178,14 +177,14 @@ export default function UploadPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="mx-6 my-5 rounded-lg border border-claude-hairline bg-white p-6">
+        <div className="mx-6 my-5 rounded-lg border border-claude-hairline bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300 animate-fade-in-up" style={{ animationDelay: "150ms" }}>
           {saving ? (
-            <div className="py-12 text-center space-y-3">
+            <div className="py-12 text-center space-y-3 animate-fade-in">
               <div className="h-5 w-5 rounded-full border-2 border-claude-primary border-t-transparent animate-spin mx-auto"></div>
               <p className="font-body text-sm text-claude-muted">Registering data source...</p>
             </div>
           ) : profiling ? (
-            <div className="py-12 text-center space-y-4">
+            <div className="py-12 text-center space-y-4 animate-fade-in">
               <RefreshCw className="h-6 w-6 text-claude-primary animate-spin mx-auto" />
               <p className="font-body text-sm font-medium text-claude-ink">Generating schema profile</p>
               <p className="font-body text-xs text-claude-muted max-w-md mx-auto">
@@ -196,9 +195,13 @@ export default function UploadPage() {
               </div>
             </div>
           ) : activeTab === "file" ? (
-            <FileUploader onUploadComplete={handleFileUploadSaved} />
+            <div className="animate-fade-in">
+              <FileUploader onUploadComplete={handleFileUploadSaved} />
+            </div>
           ) : (
-            <SQLConnector onConnectionSaved={handleSQLConnectionSaved} />
+            <div className="animate-fade-in">
+              <SQLConnector onConnectionSaved={handleSQLConnectionSaved} />
+            </div>
           )}
         </div>
       </div>

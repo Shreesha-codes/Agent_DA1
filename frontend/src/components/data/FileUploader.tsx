@@ -110,12 +110,12 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
         onDrop={handleDrop}
-        className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-all ${
+        className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-all duration-300 ${
           isDragActive
-            ? "border-claude-primary bg-claude-primary/5"
+            ? "border-claude-primary bg-claude-primary/5 scale-[1.01] shadow-inner"
             : file
             ? "border-claude-hairline bg-claude-surface-soft"
-            : "border-claude-hairline bg-white hover:border-claude-muted"
+            : "border-claude-hairline bg-white hover:border-claude-muted hover:bg-claude-surface-soft/20"
         }`}
       >
         <input
@@ -128,8 +128,8 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
         />
 
         {file ? (
-          <div className="text-center">
-            <FileText className="mx-auto h-10 w-10 text-claude-primary mb-3" />
+          <div className="text-center animate-fade-in">
+            <FileText className="mx-auto h-10 w-10 text-claude-primary mb-3 animate-bounce" style={{ animationDuration: '2s' }} />
             <p className="font-body text-sm font-medium text-claude-ink">{file.name}</p>
             <p className="font-body text-xs text-claude-muted mt-1">
               {(file.size / (1024 * 1024)).toFixed(2)} MB
@@ -138,13 +138,13 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
               <div className="mt-6 flex justify-center gap-3">
                 <button
                   onClick={() => setFile(null)}
-                  className="font-body text-sm font-medium text-claude-ink px-4 py-2 rounded-md border border-claude-hairline hover:bg-claude-surface-soft transition-colors"
+                  className="font-body text-sm font-medium text-claude-ink px-4 py-2 rounded-md border border-claude-hairline hover:bg-claude-surface-soft hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                 >
                   Change File
                 </button>
                 <button
                   onClick={uploadFile}
-                  className="font-body text-sm font-medium text-white bg-claude-primary px-5 py-2 rounded-md hover:bg-claude-primary-active transition-colors"
+                  className="font-body text-sm font-medium text-white bg-claude-primary px-5 py-2 rounded-md hover:bg-claude-primary-active hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 transition-all duration-200"
                 >
                   Upload File
                 </button>
@@ -152,10 +152,10 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
             )}
           </div>
         ) : (
-          <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer">
-            <UploadCloud className="h-10 w-10 text-claude-muted mb-4" />
+          <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer group w-full text-center py-4">
+            <UploadCloud className="h-10 w-10 text-claude-muted mb-4 group-hover:-translate-y-1 group-hover:text-claude-primary transition-all duration-300" />
             <span className="font-body text-sm text-claude-ink">
-              Drag and drop your file here, or <span className="text-claude-primary hover:underline">browse</span>
+              Drag and drop your file here, or <span className="text-claude-primary hover:underline font-medium">browse</span>
             </span>
             <span className="font-body text-xs text-claude-muted mt-2">
               Supported: CSV, XLSX, JSON (Max 50MB)

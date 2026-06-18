@@ -95,6 +95,8 @@ async def _run_profiling(data_source_id: str, user_id: str):
         elif ds["source_type"] == "postgres":
             from services.sql_connector import fetch_data_snapshot
             df = await fetch_data_snapshot(ds)
+            if df.empty:
+                raise ValueError(f"Table '{ds.get('pg_schema', 'public')}.{ds['pg_table']}' exists but has no rows")
 
         else:
             raise ValueError(f"Unknown source type: {ds['source_type']}")
@@ -127,8 +129,10 @@ async def _run_profiling(data_source_id: str, user_id: str):
 
     except Exception as e:
         logger.exception("Profiling failed for data source %s: %s", data_source_id, e)
+        # Store error message for debugging
         await queries.update_data_source(data_source_id, user_id, {
             "profile_status": "failed",
+            "profile_error": str(e),
         })
 
 

@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS data_sources (
   column_schema    JSONB,
   data_profile     JSONB,
   profile_status   TEXT DEFAULT 'pending' CHECK (profile_status IN ('pending', 'running', 'complete', 'failed')),
+  profile_error    TEXT,
   created_at       TIMESTAMPTZ DEFAULT now(),
   updated_at       TIMESTAMPTZ DEFAULT now()
 );

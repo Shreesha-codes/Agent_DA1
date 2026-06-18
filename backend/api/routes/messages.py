@@ -75,7 +75,7 @@ async def send_message(
             question=question,
             user_id=user_id,
             data_source=ds,
-            docker_executor=executor,
+            sandbox_executor=executor,
         )
     except Exception as e:
         logger.exception("Agent analysis failed: %s", e)

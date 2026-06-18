@@ -2,263 +2,264 @@
 
 import Link from "next/link";
 import { SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
-import { BarChart3, Database, MessageSquare, ShieldCheck, Cpu, Search, Home, Server, Wrench } from "lucide-react";
+import { BarChart3, Database, MessageSquare, Shield, Cpu, ChevronRight } from "lucide-react";
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
 
   return (
-    <div className="bg-white">
-      {/* ─── TOP BANNER ─── */}
-      <div className="bg-black text-white">
-        <div className="flex items-center justify-between px-4 md:px-6 py-2.5">
-          <div className="flex items-center gap-3">
-            <Cpu className="h-4 w-4 text-retro-red" />
-            <span className="font-heading text-xs font-bold uppercase tracking-wider leading-none">
-              BUILD YOUR OWN ANALYSIS. ONLINE.
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-retro-sticker-yellow text-black font-heading text-[10px] font-bold uppercase px-2 py-1 border border-white">
-              BUY a DELL
+    <div className="min-h-screen bg-claude-canvas">
+      {/* Top Nav */}
+      <header className="border-b border-claude-hairline bg-claude-canvas">
+        <div className="flex h-16 items-center justify-between px-4 md:px-6 max-w-7xl mx-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-md bg-claude-primary flex items-center justify-center">
+              <BarChart3 className="h-4 w-4 text-white" />
             </div>
-            <span className="font-heading text-xs font-bold text-retro-red leading-none">
-              1-800-213-DELL
-            </span>
+            <span className="font-display text-[22px] font-normal leading-none text-claude-ink tracking-tight">Agent_DA</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-6">
+            <a href="#features" className="font-body text-sm text-claude-body hover:text-claude-ink">Features</a>
+            <a href="#about" className="font-body text-sm text-claude-body hover:text-claude-ink">About</a>
+            {!isSignedIn ? (
+              <div className="flex items-center gap-3 pl-3 border-l border-claude-hairline">
+                <SignInButton mode="modal">
+                  <button className="font-body text-sm text-claude-body hover:text-claude-ink">Sign in</button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="font-body text-sm font-medium text-white bg-claude-primary px-4 py-2 rounded-md hover:bg-claude-primary-active transition-colors leading-none">
+                    Try Agent_DA
+                  </button>
+                </SignUpButton>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 pl-3 border-l border-claude-hairline">
+                <Link
+                  href="/dashboard"
+                  className="font-body text-sm font-medium text-white bg-claude-primary px-4 py-2 rounded-md hover:bg-claude-primary-active transition-colors leading-none"
+                >
+                  Dashboard
+                </Link>
+              </div>
+            )}
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Band */}
+      <section className="border-b border-claude-hairline">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="font-body text-xs font-medium text-claude-primary uppercase tracking-wider mb-4 block">
+                Conversational Data Analysis
+              </span>
+              <h1 className="font-display text-display-lg text-claude-ink mb-6">
+                Meet your data analysis agent
+              </h1>
+              <p className="font-body text-lg text-claude-body leading-relaxed mb-8 max-w-lg">
+                Ask your database or spreadsheets anything in plain English. Agent_DA writes code, executes it in a secure sandbox, and returns interactive charts and narratives.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <SignUpButton mode="modal">
+                  <button className="font-body text-sm font-medium text-white bg-claude-primary px-6 py-3 rounded-md hover:bg-claude-primary-active transition-colors">
+                    Start Analyzing
+                  </button>
+                </SignUpButton>
+                <a href="#features" className="font-body text-sm font-medium text-claude-ink px-6 py-3 rounded-md border border-claude-hairline hover:bg-claude-surface-soft transition-colors">
+                  Learn more
+                </a>
+              </div>
+            </div>
+            <div className="bg-claude-surface-card rounded-xl p-8 border border-claude-hairline">
+              <div className="bg-claude-surface-dark rounded-lg p-5 border border-claude-surface-dark-elevated">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-claude-error"></div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-claude-warning"></div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-claude-success"></div>
+                  </div>
+                  <span className="font-mono text-[10px] text-claude-on-dark-soft ml-2">analysis_sandbox</span>
+                </div>
+                <pre className="font-mono text-xs text-claude-on-dark leading-relaxed">
+                  <span className="text-claude-accent-teal">import</span> pandas <span className="text-claude-accent-teal">as</span> pd<br/>
+                  df = pd.read_csv(<span className="text-claude-accent-amber">&quot;sales_data.csv&quot;</span>)<br/>
+                  df.groupby(<span className="text-claude-accent-amber">&quot;region&quot;</span>)[<span className="text-claude-accent-amber">&quot;revenue&quot;</span>].sum()<br/><br/>
+                  <span className="text-claude-success"># Returns: Region A $245K, Region B $189K</span>
+                </pre>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ─── HEADER BAR ─── */}
-      <div className="flex items-center justify-between border-b border-black px-4 md:px-6 py-2.5">
-        <div className="flex items-center gap-3">
-          <BarChart3 className="h-5 w-5" />
-          <span className="font-display text-sm font-black uppercase tracking-tight leading-none">Anton RAG</span>
-          <span className="font-heading text-[10px] font-bold uppercase text-black bg-retro-sticker-yellow px-1.5 py-0.5 border border-black leading-none">
-            V1.0
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          {!isSignedIn ? (
-            <>
-              <SignInButton mode="modal">
-                <button className="font-body text-xs text-retro-link underline hover:text-black transition-colors">
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="bg-black text-white font-heading text-[10px] font-bold uppercase px-3 py-1.5 border border-black hover:bg-white hover:text-black transition-colors leading-none">
-                  Get Started
-                </button>
-              </SignUpButton>
-            </>
-          ) : (
-            <Link
-              href="/dashboard"
-              className="bg-black text-white font-heading text-[10px] font-bold uppercase px-3 py-1.5 border border-black hover:bg-white hover:text-black transition-colors leading-none"
-            >
-              Dashboard &rarr;
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* ─── TWO-COLUMN MAIN ─── */}
-      <div className="flex flex-col md:flex-row">
-        {/* LEFT RAIL */}
-        <div className="w-full md:w-72 border-r border-black flex-shrink-0">
-          {/* Red CTA Panel */}
-          <div className="bg-retro-red text-white p-4 md:p-5 border-b border-black">
-            <p className="font-body text-sm leading-relaxed text-white/90">
-              At Anton RAG, we&apos;ll help you find the right analysis, configure it, execute it, and visualize it.
+      {/* Feature Cards */}
+      <section id="features" className="border-b border-claude-hairline">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
+          <div className="text-center mb-16">
+            <span className="font-body text-xs font-medium text-claude-primary uppercase tracking-wider">Features</span>
+            <h2 className="font-display text-display-md text-claude-ink mt-3">Built for data teams</h2>
+            <p className="font-body text-lg text-claude-body mt-4 max-w-2xl mx-auto">
+              From ingestion to visualization, Agent_DA handles the full analytical workflow.
             </p>
           </div>
 
-          {/* Icon-Label Nav Grid */}
-          <div className="grid grid-cols-2">
-            <div className="flex flex-col items-center justify-center border-r border-b border-black p-4 md:p-5">
-              <Search className="h-6 w-6 mb-1.5" />
-              <span className="font-heading text-[10px] font-bold uppercase tracking-wider">FIND</span>
-            </div>
-            <div className="flex flex-col items-center justify-center border-b border-black p-4 md:p-5">
-              <Home className="h-6 w-6 mb-1.5" />
-              <span className="font-heading text-[10px] font-bold uppercase tracking-wider">HOME</span>
-            </div>
-            <div className="flex flex-col items-center justify-center border-r border-black p-4 md:p-5">
-              <Server className="h-6 w-6 mb-1.5" />
-              <span className="font-heading text-[10px] font-bold uppercase tracking-wider">STORE</span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4 md:p-5">
-              <Wrench className="h-6 w-6 mb-1.5" />
-              <span className="font-heading text-[10px] font-bold uppercase tracking-wider">SERVICE</span>
-            </div>
-          </div>
-
-          {/* Round Award Seal */}
-          <div className="flex justify-center border-b border-black py-5 px-4">
-            <div className="h-16 w-16 rounded-full bg-retro-red flex items-center justify-center border-2 border-black">
-              <div className="text-center">
-                <span className="font-heading text-[6px] font-bold text-white uppercase block leading-tight">PC Mag</span>
-                <span className="font-heading text-[6px] font-bold text-white uppercase block leading-tight">Readers</span>
-                <span className="font-heading text-[6px] font-bold text-white uppercase block leading-tight">Choice</span>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline">
+              <div className="h-10 w-10 rounded-md bg-claude-primary/10 flex items-center justify-center mb-5">
+                <Database className="h-5 w-5 text-claude-primary" />
               </div>
-            </div>
-          </div>
-
-          {/* Auth CTA */}
-          <div className="p-4 md:p-5 text-center border-b border-black">
-            {!isSignedIn ? (
-              <SignUpButton mode="modal">
-                <button className="w-full bg-black text-white font-heading text-[10px] font-bold uppercase py-2.5 border border-black hover:bg-white hover:text-black transition-colors">
-                  Start Analyzing Now
-                </button>
-              </SignUpButton>
-            ) : (
-              <Link
-                href="/dashboard"
-                className="block w-full bg-black text-white font-heading text-[10px] font-bold uppercase py-2.5 border border-black hover:bg-white hover:text-black transition-colors text-center"
-              >
-                Go to Dashboard
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* RIGHT CONTENT COLUMN */}
-        <div className="flex-1">
-          {/* Section Eyebrow — DATA ANALYZER */}
-          <div className="bg-retro-olive text-black px-4 md:px-6 py-5 md:py-6 border-b border-black">
-            <h2 className="font-display text-2xl md:text-3xl font-black uppercase leading-none">
-              DATA ANALYZER
-            </h2>
-          </div>
-
-          {/* Ribbon Card — Flexible Ingestion */}
-          <div className="border-b border-black">
-            <div className="bg-white px-4 md:px-6 py-1.5 border-b border-black">
-              <h3 className="font-heading text-xs font-bold uppercase">FLEXIBLE INGESTION</h3>
-            </div>
-            <div className="bg-retro-sage px-4 md:px-6 py-4 flex items-start gap-4">
-              <Database className="h-8 w-8 flex-shrink-0 mt-0.5" />
-              <p className="font-body text-sm leading-relaxed">
-                Support for CSV, Excel, and JSON files, or live read-only PostgreSQL connections. Full automatic statistical schema profiling upon load.
+              <h3 className="font-display text-display-sm text-claude-ink mb-3">Flexible Ingestion</h3>
+              <p className="font-body text-base text-claude-body leading-relaxed">
+                Support for CSV, Excel, and JSON files, or live read-only PostgreSQL connections. Automatic schema profiling upon load.
               </p>
             </div>
-          </div>
 
-          {/* Ribbon Card — Conversational Context */}
-          <div className="border-b border-black relative">
-            <div className="absolute -right-2 -top-2 z-10">
-              <div className="bg-retro-sticker-yellow text-black font-heading text-[10px] font-bold uppercase px-2 py-1 border border-black rotate-burst">
-                NEW!
+            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline relative">
+              <span className="absolute top-4 right-4 font-body text-[11px] font-medium text-white bg-claude-primary px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                New
+              </span>
+              <div className="h-10 w-10 rounded-md bg-claude-primary/10 flex items-center justify-center mb-5">
+                <MessageSquare className="h-5 w-5 text-claude-primary" />
               </div>
-            </div>
-            <div className="bg-white px-4 md:px-6 py-1.5 border-b border-black">
-              <h3 className="font-heading text-xs font-bold uppercase">CONVERSATIONAL CONTEXT</h3>
-            </div>
-            <div className="bg-retro-peach px-4 md:px-6 py-4 flex items-start gap-4">
-              <MessageSquare className="h-8 w-8 flex-shrink-0 mt-0.5" />
-              <p className="font-body text-sm leading-relaxed">
-                Ask follow-up questions naturally. The agent remembers the previous code, findings narratives, and data schema across the session.
+              <h3 className="font-display text-display-sm text-claude-ink mb-3">Conversational Context</h3>
+              <p className="font-body text-base text-claude-body leading-relaxed">
+                Ask follow-up questions naturally. The agent remembers previous code, findings, and schema across the session.
               </p>
             </div>
-          </div>
 
-          {/* Ribbon Card — Isolated Sandbox */}
-          <div className="border-b border-black">
-            <div className="bg-white px-4 md:px-6 py-1.5 border-b border-black">
-              <h3 className="font-heading text-xs font-bold uppercase">ISOLATED SANDBOX</h3>
-            </div>
-            <div className="bg-retro-periwinkle px-4 md:px-6 py-4 flex items-start gap-4">
-              <ShieldCheck className="h-8 w-8 flex-shrink-0 mt-0.5" />
-              <p className="font-body text-sm leading-relaxed">
+            <div className="bg-claude-surface-card rounded-lg p-8 border border-claude-hairline">
+              <div className="h-10 w-10 rounded-md bg-claude-primary/10 flex items-center justify-center mb-5">
+                <Shield className="h-5 w-5 text-claude-primary" />
+              </div>
+              <h3 className="font-display text-display-sm text-claude-ink mb-3">Isolated Sandbox</h3>
+              <p className="font-body text-base text-claude-body leading-relaxed">
                 All generated code executes in a locked-down, network-less Docker container, memory-capped to protect your system.
               </p>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Section Eyebrow — CONNECT */}
-          <div className="bg-retro-salmon text-black px-4 md:px-6 py-5 md:py-6 border-b border-black">
-            <h2 className="font-display text-2xl md:text-3xl font-black uppercase leading-none">
-              CONNECT
-            </h2>
-          </div>
-
-          {/* Ribbon Card — Enterprise Security */}
-          <div className="border-b border-black">
-            <div className="bg-white px-4 md:px-6 py-1.5 border-b border-black">
-              <h3 className="font-heading text-xs font-bold uppercase">ENTERPRISE SECURITY</h3>
-            </div>
-            <div className="bg-retro-sky px-4 md:px-6 py-4 flex items-start gap-4">
-              <ShieldCheck className="h-8 w-8 flex-shrink-0 mt-0.5" />
-              <p className="font-body text-sm leading-relaxed">
+      {/* Dark Mockup Band */}
+      <section id="about" className="border-b border-claude-hairline">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-24">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="font-display text-display-md text-claude-ink mb-6">
+                Enterprise security. No data leakage.
+              </h2>
+              <p className="font-body text-lg text-claude-body leading-relaxed mb-8">
                 Your data never leaves your infrastructure. Code execution is isolated dynamically, preventing data contamination and unauthorized access.
               </p>
-            </div>
-          </div>
-
-          {/* Red CTA Panel (right side version) */}
-          <div className="bg-retro-red text-white px-4 md:px-6 py-4 border-b border-black">
-            <div className="max-w-2xl">
-              <h3 className="font-display text-lg md:text-xl font-black uppercase leading-tight mb-2">
-                ENTERPRISE SECURITY. NO DATA LEAKAGE.
-              </h3>
-              <p className="font-body text-sm leading-relaxed text-white/80 mb-4">
-                Your data never leaves your infrastructure. Code execution is isolated dynamically.
-              </p>
               <Link
-                href="/dashboard"
-                className="inline-block bg-white text-retro-red font-heading text-[10px] font-bold uppercase px-4 py-2 border border-white hover:bg-transparent hover:text-white transition-colors leading-none"
+                href={isSignedIn ? "/dashboard" : "/sign-up"}
+                className="inline-flex items-center gap-2 font-body text-sm font-medium text-claude-primary hover:text-claude-primary-active transition-colors"
               >
-                Try It Now &rarr;
+                Start analyzing your data <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
+            <div className="bg-claude-surface-dark rounded-xl p-8 border border-claude-surface-dark-elevated">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-claude-error"></div>
+                  <div className="h-2.5 w-2.5 rounded-full bg-claude-warning"></div>
+                  <div className="h-2.5 w-2.5 rounded-full bg-claude-success"></div>
+                </div>
+                <span className="font-mono text-[10px] text-claude-on-dark-soft ml-2">docker_sandbox</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                  <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">CPU</span>
+                  <p className="font-mono text-sm text-claude-on-dark mt-1">1 core</p>
+                </div>
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                  <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">Memory</span>
+                  <p className="font-mono text-sm text-claude-on-dark mt-1">512 MB</p>
+                </div>
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                  <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">Network</span>
+                  <p className="font-mono text-sm text-claude-on-dark mt-1">Isolated</p>
+                </div>
+                <div className="bg-claude-surface-dark-soft rounded-lg p-4">
+                  <span className="font-mono text-[10px] text-claude-accent-teal uppercase tracking-wider">Timeout</span>
+                  <p className="font-mono text-sm text-claude-on-dark mt-1">60s</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ─── FOOTER ICON-NAV ROW ─── */}
-      <div className="border-b border-black">
-        <div className="flex items-center justify-center gap-0">
-          <div className="flex-1 flex flex-col items-center justify-center border-r border-black py-4 px-2">
-            <Search className="h-5 w-5 mb-1" />
-            <span className="font-heading text-[9px] font-bold uppercase tracking-wider">FIND</span>
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center border-r border-black py-4 px-2">
-            <Home className="h-5 w-5 mb-1" />
-            <span className="font-heading text-[9px] font-bold uppercase tracking-wider">HOME</span>
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center border-r border-black py-4 px-2">
-            <Server className="h-5 w-5 mb-1" />
-            <span className="font-heading text-[9px] font-bold uppercase tracking-wider">STORE</span>
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center py-4 px-2">
-            <Wrench className="h-5 w-5 mb-1" />
-            <span className="font-heading text-[9px] font-bold uppercase tracking-wider">SERVICE</span>
+      {/* Coral CTA Band */}
+      <section className="border-b border-claude-hairline">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-16 md:py-20">
+          <div className="bg-claude-primary rounded-xl p-10 md:p-16 text-center">
+            <h2 className="font-display text-display-sm text-white mb-4">
+              Ready to analyze your data?
+            </h2>
+            <p className="font-body text-lg text-white/80 mb-8 max-w-lg mx-auto">
+              Connect a dataset and start asking questions in plain English. No setup required.
+            </p>
+            <SignUpButton mode="modal">
+              <button className="font-body text-sm font-medium text-claude-primary bg-white px-8 py-3 rounded-md hover:bg-claude-hairline transition-colors">
+                Get Started Free
+              </button>
+            </SignUpButton>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ─── FOOTER LINKS ─── */}
-      <div className="px-4 md:px-6 py-5">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <a href="#" className="font-body text-xs text-retro-link underline hover:text-black transition-colors">
-            Copyright &copy; {new Date().getFullYear()} Anton RAG. All rights reserved.
-          </a>
-          <div className="flex gap-4 font-body text-xs">
-            <a href="#" className="text-retro-link underline hover:text-black transition-colors">Privacy Policy</a>
-            <a href="#" className="text-retro-link underline hover:text-black transition-colors">Terms of Use</a>
-            <a href="#" className="text-retro-link underline hover:text-black transition-colors">Security Sandbox</a>
+      {/* Footer */}
+      <footer className="bg-claude-surface-dark">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
+          <div className="grid md:grid-cols-4 gap-8 mb-10">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-6 w-6 rounded-md bg-claude-primary flex items-center justify-center">
+                  <BarChart3 className="h-3.5 w-3.5 text-white" />
+                </div>
+                <span className="font-display text-lg text-claude-on-dark tracking-tight">Agent_DA</span>
+              </div>
+              <p className="font-body text-sm text-claude-on-dark-soft leading-relaxed">
+                Conversational data analysis for modern teams.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-body text-xs font-medium text-claude-on-dark uppercase tracking-wider mb-4">Product</h4>
+              <div className="space-y-2.5">
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Features</a>
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Pricing</a>
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Documentation</a>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-body text-xs font-medium text-claude-on-dark uppercase tracking-wider mb-4">Company</h4>
+              <div className="space-y-2.5">
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">About</a>
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Blog</a>
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Contact</a>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-body text-xs font-medium text-claude-on-dark uppercase tracking-wider mb-4">Legal</h4>
+              <div className="space-y-2.5">
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Privacy Policy</a>
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Terms of Use</a>
+                <a href="#" className="block font-body text-sm text-claude-on-dark-soft hover:text-claude-on-dark">Security</a>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-claude-surface-dark-elevated pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="font-body text-xs text-claude-on-dark-soft">
+              &copy; {new Date().getFullYear()} Agent_DA. All rights reserved.
+            </p>
+            <p className="font-body text-xs text-claude-on-dark-soft/50">
+              Built with Anthropic&apos;s Claude design language
+            </p>
           </div>
         </div>
-      </div>
-
-      {/* ─── BROWSER COMPAT NOTE ─── */}
-      <div className="border-t border-black px-4 md:px-6 py-2 text-center">
-        <p className="font-body text-[9px] text-black/30">
-          This site is best viewed with browser versions 3.0 and higher.
-        </p>
-      </div>
+      </footer>
     </div>
   );
 }

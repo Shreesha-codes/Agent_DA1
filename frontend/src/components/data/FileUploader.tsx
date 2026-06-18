@@ -29,7 +29,7 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
   const validateAndSetFile = (selectedFile: File) => {
     setError(null);
-    const maxSizeBytes = 50 * 1024 * 1024; // 50MB
+    const maxSizeBytes = 50 * 1024 * 1024;
     if (selectedFile.size > maxSizeBytes) {
       setError("Files must be under 50MB. Try removing unused columns or rows first.");
       return;
@@ -57,7 +57,6 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
-
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       validateAndSetFile(e.dataTransfer.files[0]);
     }
@@ -80,9 +79,6 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
       const uniqueId = Math.random().toString(36).substring(2, 15);
       const storagePath = `${user.id}/${uniqueId}/data.${ext}`;
 
-      // Upload directly to Supabase storage bucket 'data-uploads'
-      // Supabase upload progress can be tracked using XMLHttpRequest in custom fetch, 
-      // but standard supabase SDK upload also works fine. Let's upload using supabase-js:
       const { data, error: uploadError } = await supabase.storage
         .from("data-uploads")
         .upload(storagePath, file, {
@@ -94,7 +90,6 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
         throw new Error(uploadError.message);
       }
 
-      // Track format
       let format: "csv" | "excel" | "json" = "csv";
       if (file.name.toLowerCase().endsWith(".json")) format = "json";
       else if (file.name.toLowerCase().endsWith(".xlsx") || file.name.toLowerCase().endsWith(".xls")) format = "excel";
@@ -115,12 +110,12 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
         onDrop={handleDrop}
-        className={`flex flex-col items-center justify-center border-2 border-black p-10 transition-all ${
+        className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-all ${
           isDragActive
-            ? "bg-black/5"
+            ? "border-claude-primary bg-claude-primary/5"
             : file
-            ? "bg-white"
-            : "bg-white hover:bg-black/5"
+            ? "border-claude-hairline bg-claude-surface-soft"
+            : "border-claude-hairline bg-white hover:border-claude-muted"
         }`}
       >
         <input
@@ -134,22 +129,22 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
         {file ? (
           <div className="text-center">
-            <FileText className="mx-auto h-10 w-10 text-black mb-3" />
-            <p className="font-heading text-sm font-bold uppercase text-black">{file.name}</p>
-            <p className="font-body text-xs text-black/50 mt-1">
+            <FileText className="mx-auto h-10 w-10 text-claude-primary mb-3" />
+            <p className="font-body text-sm font-medium text-claude-ink">{file.name}</p>
+            <p className="font-body text-xs text-claude-muted mt-1">
               {(file.size / (1024 * 1024)).toFixed(2)} MB
             </p>
             {!uploading && (
               <div className="mt-6 flex justify-center gap-3">
                 <button
                   onClick={() => setFile(null)}
-                  className="border border-black bg-white px-4 py-1.5 font-heading text-[10px] font-bold uppercase text-black hover:bg-black hover:text-white leading-none"
+                  className="font-body text-sm font-medium text-claude-ink px-4 py-2 rounded-md border border-claude-hairline hover:bg-claude-surface-soft transition-colors"
                 >
                   Change File
                 </button>
                 <button
                   onClick={uploadFile}
-                  className="border border-black bg-black px-5 py-1.5 font-heading text-[10px] font-bold uppercase text-white hover:bg-white hover:text-black leading-none"
+                  className="font-body text-sm font-medium text-white bg-claude-primary px-5 py-2 rounded-md hover:bg-claude-primary-active transition-colors"
                 >
                   Upload File
                 </button>
@@ -158,11 +153,11 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
           </div>
         ) : (
           <label htmlFor="file-upload" className="flex flex-col items-center cursor-pointer">
-            <UploadCloud className="h-10 w-10 text-black/40 mb-4" />
-            <span className="font-body text-sm text-black">
-              Drag and drop your file here, or <span className="text-retro-link underline">browse</span>
+            <UploadCloud className="h-10 w-10 text-claude-muted mb-4" />
+            <span className="font-body text-sm text-claude-ink">
+              Drag and drop your file here, or <span className="text-claude-primary hover:underline">browse</span>
             </span>
-            <span className="font-heading text-[10px] text-black/50 mt-2 uppercase font-bold tracking-wider">
+            <span className="font-body text-xs text-claude-muted mt-2">
               Supported: CSV, XLSX, JSON (Max 50MB)
             </span>
           </label>
@@ -171,13 +166,13 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
 
       {uploading && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between font-body text-xs text-black">
+          <div className="flex items-center justify-between font-body text-sm text-claude-ink">
             <span>Uploading dataset...</span>
             <span>{progress}%</span>
           </div>
-          <div className="h-2 w-full border border-black overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-claude-surface-card overflow-hidden">
             <div
-              className="h-full bg-black transition-all duration-300"
+              className="h-full rounded-full bg-claude-primary transition-all duration-300"
               style={{ width: `${progress || 10}%` }}
             ></div>
           </div>
@@ -185,10 +180,10 @@ export function FileUploader({ onUploadComplete }: FileUploaderProps) {
       )}
 
       {error && (
-        <div className="flex gap-2.5 border border-black bg-retro-red/5 p-4">
-          <AlertCircle className="h-5 w-5 flex-shrink-0 text-retro-red" />
-          <div className="font-body text-xs leading-relaxed text-retro-red">
-            <p className="font-heading text-[10px] font-bold uppercase">Upload Error</p>
+        <div className="flex gap-3 rounded-lg border border-claude-error/20 bg-claude-error/5 p-4">
+          <AlertCircle className="h-5 w-5 flex-shrink-0 text-claude-error" />
+          <div className="font-body text-sm leading-relaxed text-claude-error">
+            <p className="font-medium">Upload Error</p>
             <p className="mt-0.5">{error}</p>
           </div>
         </div>

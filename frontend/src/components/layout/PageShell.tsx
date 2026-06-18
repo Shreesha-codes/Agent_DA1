@@ -11,11 +11,11 @@ interface PageShellProps {
 
 export function PageShell({ children, currentSessionId, onSessionDeleted }: PageShellProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-claude-canvas">
       <TopNav />
-      <div className="flex flex-1 overflow-hidden border-t border-black">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar currentSessionId={currentSessionId} onSessionDeleted={onSessionDeleted} />
-        <main className="flex-1 overflow-y-auto bg-white border-l border-black">
+        <main className="flex-1 overflow-y-auto bg-claude-canvas">
           {children}
         </main>
       </div>

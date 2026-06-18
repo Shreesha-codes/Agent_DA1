@@ -21,7 +21,6 @@ interface SQLConnectorProps {
 export function SQLConnector({ onConnectionSaved }: SQLConnectorProps) {
   const { getToken } = useAuth();
   
-  // Form State
   const [name, setName] = useState("");
   const [host, setHost] = useState("");
   const [port, setPort] = useState(5432);
@@ -31,7 +30,6 @@ export function SQLConnector({ onConnectionSaved }: SQLConnectorProps) {
   const [schema, setSchema] = useState("public");
   const [table, setTable] = useState("");
 
-  // UI State
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
     success: boolean;
@@ -87,130 +85,70 @@ export function SQLConnector({ onConnectionSaved }: SQLConnectorProps) {
 
   const isFormValid = name && host && database && username && table;
 
+  const inputClass = "w-full rounded-md border border-claude-hairline px-3 py-2 font-body text-sm text-claude-ink placeholder-claude-muted-soft focus:border-claude-primary focus:ring-1 focus:ring-claude-primary/20 outline-none transition-all";
+  const labelClass = "font-body text-xs font-medium text-claude-ink";
+
   return (
     <form onSubmit={handleTestConnection} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Connection Name */}
         <div className="md:col-span-2 space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Connection Name</label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., Production Users Database"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Connection Name</label>
+          <input type="text" required placeholder="e.g., Production Users Database" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
         </div>
 
-        {/* Database Host */}
         <div className="space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Database Host</label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., db.example.com or localhost"
-            value={host}
-            onChange={(e) => setHost(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Database Host</label>
+          <input type="text" required placeholder="e.g., db.example.com" value={host} onChange={(e) => setHost(e.target.value)} className={inputClass} />
         </div>
 
-        {/* Port */}
         <div className="space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Port</label>
-          <input
-            type="number"
-            required
-            value={port}
-            onChange={(e) => setPort(parseInt(e.target.value) || 5432)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Port</label>
+          <input type="number" required value={port} onChange={(e) => setPort(parseInt(e.target.value) || 5432)} className={inputClass} />
         </div>
 
-        {/* Database Name */}
         <div className="space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Database Name</label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., customer_analytics"
-            value={database}
-            onChange={(e) => setDatabase(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Database Name</label>
+          <input type="text" required placeholder="e.g., customer_analytics" value={database} onChange={(e) => setDatabase(e.target.value)} className={inputClass} />
         </div>
 
-        {/* Username */}
         <div className="space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Username</label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., read_only_user"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Username</label>
+          <input type="text" required placeholder="e.g., read_only_user" value={username} onChange={(e) => setUsername(e.target.value)} className={inputClass} />
         </div>
 
-        {/* Password */}
         <div className="space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Password</label>
-          <input
-            type="password"
-            placeholder="••••••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Password</label>
+          <input type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} />
         </div>
 
-        {/* Schema */}
         <div className="space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Schema</label>
-          <input
-            type="text"
-            required
-            value={schema}
-            onChange={(e) => setSchema(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Schema</label>
+          <input type="text" required value={schema} onChange={(e) => setSchema(e.target.value)} className={inputClass} />
         </div>
 
-        {/* Table Name */}
         <div className="md:col-span-2 space-y-1.5">
-          <label className="font-heading text-[10px] font-bold uppercase text-black">Table Name</label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., users_cohort_2026"
-            value={table}
-            onChange={(e) => setTable(e.target.value)}
-            className="w-full border border-black px-3 py-2 font-body text-xs text-black placeholder-black/30 outline-none"
-          />
+          <label className={labelClass}>Table Name</label>
+          <input type="text" required placeholder="e.g., users_cohort_2026" value={table} onChange={(e) => setTable(e.target.value)} className={inputClass} />
         </div>
       </div>
 
       {/* Test Connection Results */}
       {testResult && (
-        <div
-          className={`flex gap-3 border border-black p-4 font-body text-xs leading-relaxed ${
-            testResult.success
-              ? "bg-retro-sage text-black"
-              : "bg-retro-red/10 text-retro-red"
-          }`}
-        >
+        <div className={`flex gap-3 rounded-lg border p-4 font-body text-sm leading-relaxed ${
+          testResult.success
+            ? "border-claude-success/20 bg-claude-success/5 text-claude-success"
+            : "border-claude-error/20 bg-claude-error/5 text-claude-error"
+        }`}>
           {testResult.success ? (
-            <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-black" />
+            <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
           ) : (
-            <AlertCircle className="h-5 w-5 flex-shrink-0 text-retro-red" />
+            <AlertCircle className="h-5 w-5 flex-shrink-0" />
           )}
           <div>
-            <p className="font-heading text-[10px] font-bold uppercase">{testResult.success ? "Connection Verified" : "Verification Failed"}</p>
+            <p className="font-medium">{testResult.success ? "Connection Verified" : "Verification Failed"}</p>
             <p className="mt-0.5">{testResult.message}</p>
             {testResult.success && (
-              <div className="mt-2 flex gap-4 font-mono text-[10px] uppercase tracking-wide opacity-90">
+              <div className="mt-2 flex gap-4 font-mono text-[10px] uppercase tracking-wide opacity-80">
                 <span>Rows: {testResult.row_count ?? "N/A"}</span>
                 <span>Columns: {testResult.column_count ?? "N/A"}</span>
               </div>
@@ -224,7 +162,7 @@ export function SQLConnector({ onConnectionSaved }: SQLConnectorProps) {
         <button
           type="submit"
           disabled={testing || !isFormValid}
-          className="border border-black bg-white px-5 py-2 font-heading text-[10px] font-bold uppercase text-black hover:bg-black hover:text-white disabled:opacity-30 leading-none"
+          className="font-body text-sm font-medium text-claude-ink px-5 py-2 rounded-md border border-claude-hairline hover:bg-claude-surface-soft transition-colors disabled:opacity-50"
         >
           {testing ? (
             <span className="flex items-center gap-1.5">
@@ -240,7 +178,7 @@ export function SQLConnector({ onConnectionSaved }: SQLConnectorProps) {
           type="button"
           disabled={!testResult?.success || testing}
           onClick={handleSave}
-          className="border border-black bg-black px-6 py-2 font-heading text-[10px] font-bold uppercase text-white hover:bg-white hover:text-black disabled:opacity-30 leading-none"
+          className="font-body text-sm font-medium text-white bg-claude-primary px-6 py-2 rounded-md hover:bg-claude-primary-active transition-colors disabled:opacity-50"
         >
           Save Data Source
         </button>

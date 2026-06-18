@@ -35,7 +35,7 @@ export function MessageInput({ onSendMessage, disabled, placeholder = "Ask a que
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative border border-black bg-white px-3 py-2.5">
+    <form onSubmit={handleSubmit} className="relative rounded-lg border border-claude-hairline bg-white px-4 py-3 focus-within:border-claude-primary focus-within:ring-1 focus-within:ring-claude-primary/20 transition-all">
       <textarea
         ref={textareaRef}
         rows={1}
@@ -44,16 +44,16 @@ export function MessageInput({ onSendMessage, disabled, placeholder = "Ask a que
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        className="w-full resize-none bg-transparent font-body text-xs text-black placeholder-black/30 outline-none disabled:opacity-50 pr-12 min-h-[22px] max-h-[180px] overflow-y-auto"
+        className="w-full resize-none bg-transparent font-body text-sm text-claude-ink placeholder-claude-muted-soft outline-none disabled:opacity-50 pr-12 min-h-[22px] max-h-[180px] overflow-y-auto"
       />
 
-      <div className="absolute right-2.5 bottom-2.5 flex items-center gap-2">
+      <div className="absolute right-3 bottom-3 flex items-center gap-2">
         <button
           type="submit"
           disabled={!text.trim() || disabled}
-          className="flex h-6 w-6 items-center justify-center bg-black text-white border border-black hover:bg-white hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-black disabled:hover:text-white"
+          className="flex h-8 w-8 items-center justify-center rounded-md bg-claude-primary text-white hover:bg-claude-primary-active transition-colors disabled:opacity-30 disabled:hover:bg-claude-primary"
         >
-          <ArrowUp className="h-3.5 w-3.5" />
+          <ArrowUp className="h-4 w-4" />
         </button>
       </div>
     </form>

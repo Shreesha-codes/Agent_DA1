@@ -23,7 +23,7 @@ export function MessageList({ messages, loading }: MessageListProps) {
       if (para.trim().startsWith("1.") || para.trim().startsWith("2.") || para.trim().startsWith("-")) {
         const items = para.split("\n");
         return (
-          <ol key={pIdx} className="list-decimal pl-5 space-y-1.5 font-body text-xs text-black mt-2 mb-3">
+          <ol key={pIdx} className="list-decimal pl-5 space-y-1 font-body text-sm text-claude-body mt-2 mb-3">
             {items.map((item, iIdx) => {
               const cleanItem = item.replace(/^\d+\.\s*|-\s*/, "");
               return <li key={iIdx} dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(cleanItem) }} />;
@@ -31,11 +31,10 @@ export function MessageList({ messages, loading }: MessageListProps) {
           </ol>
         );
       }
-
       return (
         <p
           key={pIdx}
-          className="font-body text-xs text-black leading-relaxed mb-3.5"
+          className="font-body text-sm text-claude-body leading-relaxed mb-3"
           dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(para) }}
         />
       );
@@ -44,39 +43,39 @@ export function MessageList({ messages, loading }: MessageListProps) {
 
   const formatInlineMarkdown = (text: string) => {
     let formatted = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-black/10 px-1 font-mono text-[10px] text-black border border-black">$1</code>');
+    formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-claude-surface-card px-1.5 font-mono text-xs text-claude-ink rounded border border-claude-hairline">$1</code>');
     return formatted;
   };
 
   return (
-    <div className="space-y-6 px-4 py-6">
+    <div className="space-y-6 px-4 py-6 max-w-4xl mx-auto">
       {messages.map((msg) => {
         const isUser = msg.role === "user";
 
         return (
-          <div key={msg.id} className={`flex gap-3 max-w-4xl ${isUser ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
-            <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center border border-black ${
-              isUser ? "bg-white text-black" : "bg-black text-white"
+          <div key={msg.id} className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""}`}>
+            <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
+              isUser ? "bg-claude-surface-card text-claude-ink border border-claude-hairline" : "bg-claude-primary text-white"
             }`}>
-              {isUser ? <User className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+              {isUser ? <User className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
             </div>
 
-            <div className="flex-1 space-y-3 overflow-hidden">
+            <div className={`flex-1 space-y-3 overflow-hidden max-w-[85%] ${isUser ? "items-end" : ""}`}>
               <div className="flex items-center gap-2">
-                <span className="font-heading text-[10px] font-bold uppercase text-black">
-                  {isUser ? "You" : "Anton Agent"}
+                <span className="font-body text-xs font-medium text-claude-ink">
+                  {isUser ? "You" : "Agent_DA Agent"}
                 </span>
-                <span className="font-body text-[9px] text-black/40">
+                <span className="font-body text-xs text-claude-muted-soft">
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
 
-              <div className={`border border-black p-3 ${isUser ? "bg-black/5" : "bg-white"}`}>
+              <div className={`rounded-lg border border-claude-hairline p-4 ${isUser ? "bg-claude-surface-card" : "bg-white"}`}>
                 {renderTextContent(msg.content)}
               </div>
 
               {!isUser && msg.visualization && (
-                <div className="border border-black bg-white">
+                <div className="rounded-lg border border-claude-hairline bg-white overflow-hidden">
                   <ChartRenderer visualization={msg.visualization} />
                 </div>
               )}
@@ -92,18 +91,18 @@ export function MessageList({ messages, loading }: MessageListProps) {
       })}
 
       {loading && (
-        <div className="flex gap-3 max-w-md mr-auto">
-          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center border border-black bg-black text-white">
-            <Sparkles className="h-3.5 w-3.5 animate-pulse-slow" />
+        <div className="flex gap-3 max-w-lg">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-claude-primary text-white">
+            <Sparkles className="h-4 w-4 animate-pulse-slow" />
           </div>
           <div className="flex-1 space-y-2">
-            <span className="font-heading text-[10px] font-bold uppercase text-black block">
-              Anton Agent is analyzing...
+            <span className="font-body text-xs font-medium text-claude-ink block">
+              Agent_DA Agent is analyzing...
             </span>
-            <div className="border border-black p-3 bg-white space-y-2">
-              <div className="h-3 w-5/6 bg-black/10 animate-pulse-slow"></div>
-              <div className="h-3 w-4/5 bg-black/10 animate-pulse-slow"></div>
-              <div className="h-3 w-3/4 bg-black/10 animate-pulse-slow"></div>
+            <div className="rounded-lg border border-claude-hairline p-4 bg-white space-y-2">
+              <div className="h-3 w-5/6 bg-claude-surface-card rounded animate-pulse-slow"></div>
+              <div className="h-3 w-4/5 bg-claude-surface-card rounded animate-pulse-slow"></div>
+              <div className="h-3 w-3/4 bg-claude-surface-card rounded animate-pulse-slow"></div>
             </div>
           </div>
         </div>

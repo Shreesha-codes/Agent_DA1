@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BarChart3, Download, RefreshCw } from "lucide-react";
+import { BarChart3, RefreshCw } from "lucide-react";
 import { Visualization } from "../../lib/types";
 
 interface ChartRendererProps {
@@ -50,22 +50,22 @@ export function ChartRenderer({ visualization }: ChartRendererProps) {
       paper_bgcolor: "transparent",
       plot_bgcolor: "transparent",
       font: {
-        family: "'Times New Roman', Times, serif",
-        size: 11,
-        color: "#000000",
+        family: "'StyreneB', 'Inter', sans-serif",
+        size: 12,
+        color: "#3d3d3a",
       },
       title: {
         text: visualization.title,
         font: {
-          family: "'Helvetica', Arial, sans-serif",
-          size: 13,
-          color: "#000000",
-          weight: "bold",
+          family: "'StyreneB', 'Inter', sans-serif",
+          size: 14,
+          color: "#141413",
+          weight: 500,
         },
         x: 0.0,
       },
       margin: { t: 40, r: 20, b: 50, l: 50 },
-      colorway: ["#e91d2a", "#17171c", "#8e8a25", "#b3bd95", "#d77a7a"],
+      colorway: ["#cc785c", "#5db8a6", "#e8a55a", "#141413", "#8e8b82"],
       height: 400,
       autosize: true,
     };
@@ -102,19 +102,19 @@ export function ChartRenderer({ visualization }: ChartRendererProps) {
   }, [plotlyInstance, visualization]);
 
   return (
-    <div className="border border-black bg-white p-4 space-y-3">
-      <div className="relative min-h-[350px] w-full bg-black/[0.02]">
+    <div className="p-4">
+      <div className="relative min-h-[350px] w-full">
         {loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 space-y-2 z-10">
-            <RefreshCw className="h-4 w-4 animate-spin text-black/50" />
-            <span className="font-body text-xs text-black/50">Preparing visualization...</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 space-y-2 z-10">
+            <RefreshCw className="h-4 w-4 animate-spin text-claude-muted" />
+            <span className="font-body text-sm text-claude-muted">Preparing visualization...</span>
           </div>
         )}
 
         {error ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-            <BarChart3 className="h-7 w-7 text-black/30 mb-2" />
-            <span className="font-body text-xs text-black/50">{error}</span>
+            <BarChart3 className="h-8 w-8 text-claude-muted mb-2" />
+            <span className="font-body text-sm text-claude-muted">{error}</span>
           </div>
         ) : (
           <div ref={containerRef} className="w-full" />
@@ -122,8 +122,8 @@ export function ChartRenderer({ visualization }: ChartRendererProps) {
       </div>
 
       {visualization.caption && (
-        <div className="border-t border-black pt-2 mt-1">
-          <p className="font-body text-xs text-black/60 leading-relaxed">
+        <div className="border-t border-claude-hairline pt-3 mt-2">
+          <p className="font-body text-sm text-claude-muted leading-relaxed">
             {visualization.caption}
           </p>
         </div>

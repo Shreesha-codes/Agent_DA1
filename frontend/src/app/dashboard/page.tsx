@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-import { Database, Plus, MessageSquare, Trash2, Calendar, FileText, ChevronRight, BarChart3, RefreshCw } from "lucide-react";
+import { Database, Plus, MessageSquare, Trash2, ChevronRight, BarChart3, RefreshCw, FileText } from "lucide-react";
 import { PageShell } from "../../components/layout/PageShell";
 import { useDataSources } from "../../hooks/useDataSources";
 import { api } from "../../lib/api";
@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const [loadingSessions, setLoadingSessions] = useState(true);
   const [creatingSession, setCreatingSession] = useState<string | null>(null);
 
-  const fetchSessions = async () => {
+  const fetchSessions = useCallback(async () => {
     try {
       const data = await api.sessions.list(getToken);
       setSessions(data.sessions);
@@ -27,11 +27,11 @@ export default function DashboardPage() {
     } finally {
       setLoadingSessions(false);
     }
-  };
+  }, [getToken]);
 
   useEffect(() => {
     fetchSessions();
-  }, [getToken]);
+  }, [fetchSessions]);
 
   const handleStartAnalysis = async (dataSourceId: string) => {
     setCreatingSession(dataSourceId);
@@ -48,13 +48,13 @@ export default function DashboardPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "complete":
-        return <span className="font-heading text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 text-black bg-retro-sage border border-black">Ready</span>;
+        return <span className="font-body text-[11px] font-medium text-white bg-claude-success px-2.5 py-0.5 rounded-full">Ready</span>;
       case "running":
-        return <span className="font-heading text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 text-white bg-black animate-pulse">Profiling</span>;
+        return <span className="font-body text-[11px] font-medium text-white bg-claude-primary animate-pulse px-2.5 py-0.5 rounded-full">Profiling</span>;
       case "failed":
-        return <span className="font-heading text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 text-white bg-retro-red border border-black">Failed</span>;
+        return <span className="font-body text-[11px] font-medium text-white bg-claude-error px-2.5 py-0.5 rounded-full">Failed</span>;
       default:
-        return <span className="font-heading text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 text-black bg-black/10 border border-black">Pending</span>;
+        return <span className="font-body text-[11px] font-medium text-claude-muted bg-claude-surface-card px-2.5 py-0.5 rounded-full">Pending</span>;
     }
   };
 
@@ -62,16 +62,16 @@ export default function DashboardPage() {
     <PageShell>
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black px-6 py-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-claude-hairline px-6 py-6">
           <div>
-            <h1 className="font-display text-xl font-black uppercase text-black leading-tight">Workspace Dashboard</h1>
-            <p className="font-body text-xs text-black/60 mt-1">Ingest datasets and run natural language analytics sessions.</p>
+            <h1 className="font-display text-display-sm text-claude-ink">Workspace Dashboard</h1>
+            <p className="font-body text-sm text-claude-muted mt-1">Ingest datasets and run natural language analytics sessions.</p>
           </div>
           <Link
             href="/data/upload"
-            className="inline-flex items-center justify-center gap-2 bg-black text-white font-heading text-[10px] font-bold uppercase px-4 py-2 border border-black hover:bg-white hover:text-black transition-colors self-start md:self-auto leading-none"
+            className="inline-flex items-center justify-center gap-2 bg-claude-primary text-white font-body text-sm font-medium px-4 py-2.5 rounded-md hover:bg-claude-primary-active transition-colors self-start md:self-auto"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
             <span>Connect New Data</span>
           </Link>
         </div>
@@ -79,31 +79,31 @@ export default function DashboardPage() {
         {/* Grid Area */}
         <div className="grid md:grid-cols-3 px-6">
           {/* Data Sources Column */}
-          <div className="md:col-span-2 py-6 pr-0 md:pr-6 border-r border-black">
+          <div className="md:col-span-2 py-6 pr-0 md:pr-6 border-r border-claude-hairline">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-heading text-[10px] font-bold uppercase tracking-wider text-black/60">Connected Datasets</h2>
+              <h2 className="font-body text-xs font-medium text-claude-muted uppercase tracking-wider">Connected Datasets</h2>
               <button 
                 onClick={() => { refetchSources(); fetchSessions(); }} 
-                className="text-black/40 hover:text-black p-1 border border-transparent hover:border-black"
+                className="text-claude-muted hover:text-claude-ink p-1 rounded hover:bg-claude-surface-soft transition-colors"
                 title="Refresh workspace"
               >
-                <RefreshCw className="h-3 w-3" />
+                <RefreshCw className="h-3.5 w-3.5" />
               </button>
             </div>
 
             {loadingSources ? (
               <div className="space-y-3">
-                <div className="h-16 w-full bg-black/10 animate-pulse-slow border border-black"></div>
-                <div className="h-16 w-full bg-black/10 animate-pulse-slow border border-black"></div>
+                <div className="h-16 w-full bg-claude-surface-card rounded-lg animate-pulse-slow border border-claude-hairline"></div>
+                <div className="h-16 w-full bg-claude-surface-card rounded-lg animate-pulse-slow border border-claude-hairline"></div>
               </div>
             ) : dataSources.length === 0 ? (
-              <div className="border border-black p-8 text-center bg-black/[0.02]">
-                <Database className="h-7 w-7 text-black/40 mx-auto mb-3" />
-                <p className="font-heading text-xs font-bold uppercase text-black mb-1">No datasets connected</p>
-                <p className="font-body text-xs text-black/50 mb-5">Upload a CSV or connect a PostgreSQL database to begin.</p>
+              <div className="rounded-lg border border-claude-hairline p-10 text-center bg-claude-surface-soft">
+                <Database className="h-8 w-8 text-claude-muted mx-auto mb-3" />
+                <p className="font-body text-sm font-medium text-claude-ink mb-1">No datasets connected</p>
+                <p className="font-body text-sm text-claude-muted mb-6">Upload a CSV or connect a PostgreSQL database to begin.</p>
                 <Link
                   href="/data/upload"
-                  className="inline-block bg-black text-white font-heading text-[10px] font-bold uppercase px-4 py-2 border border-black hover:bg-white hover:text-black transition-colors leading-none"
+                  className="inline-block bg-claude-primary text-white font-body text-sm font-medium px-5 py-2.5 rounded-md hover:bg-claude-primary-active transition-colors"
                 >
                   Get Started
                 </Link>
@@ -113,18 +113,18 @@ export default function DashboardPage() {
                 {dataSources.map((ds) => (
                   <div
                     key={ds.id}
-                    className="flex items-center justify-between border border-black p-3 hover:bg-black/5 transition-colors bg-white"
+                    className="flex items-center justify-between rounded-lg border border-claude-hairline p-4 hover:bg-claude-surface-soft transition-colors bg-white"
                   >
                     <div className="flex items-center gap-3 min-w-0 mr-4">
-                      <div className="h-8 w-8 bg-black/10 flex items-center justify-center border border-black">
-                        <FileText className="h-3.5 w-3.5" />
+                      <div className="h-9 w-9 rounded-md bg-claude-surface-card flex items-center justify-center border border-claude-hairline">
+                        <FileText className="h-4 w-4 text-claude-muted" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-heading text-xs font-bold uppercase text-black truncate leading-tight">{ds.name}</h3>
-                        <div className="flex items-center gap-2 font-body text-[10px] text-black/50 mt-0.5">
+                        <h3 className="font-body text-sm font-medium text-claude-ink truncate">{ds.name}</h3>
+                        <div className="flex items-center gap-2 font-body text-xs text-claude-muted mt-0.5">
                           <span>{ds.source_type}</span>
-                          {ds.row_count !== undefined && <span>• {ds.row_count} rows</span>}
-                          <span>• {new Date(ds.created_at).toLocaleDateString()}</span>
+                          {ds.row_count !== undefined && <span>&bull; {ds.row_count} rows</span>}
+                          <span>&bull; {new Date(ds.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
@@ -136,25 +136,25 @@ export default function DashboardPage() {
                         <button
                           onClick={() => handleStartAnalysis(ds.id)}
                           disabled={creatingSession !== null}
-                          className="flex items-center gap-1 bg-black text-white font-heading text-[10px] font-bold uppercase px-2.5 py-1.5 border border-black hover:bg-white hover:text-black transition-colors disabled:opacity-50 leading-none"
+                          className="flex items-center gap-1 bg-claude-primary text-white font-body text-sm font-medium px-3 py-1.5 rounded-md hover:bg-claude-primary-active transition-colors disabled:opacity-50"
                         >
                           {creatingSession === ds.id ? (
-                            <RefreshCw className="h-2.5 w-2.5 animate-spin" />
+                            <RefreshCw className="h-3 w-3 animate-spin" />
                           ) : (
-                            <ChevronRight className="h-3 w-3" />
+                            <ChevronRight className="h-4 w-4" />
                           )}
                           <span>Analyze</span>
                         </button>
                       ) : (
-                        <div className="h-6 w-6"></div>
+                        <div className="h-7 w-7"></div>
                       )}
                       
                       <button
                         onClick={() => deleteDataSource(ds.id)}
-                        className="text-black/30 hover:text-retro-red p-1 border border-transparent hover:border-black transition-colors"
+                        className="text-claude-muted hover:text-claude-error p-1.5 rounded hover:bg-claude-surface-soft transition-colors"
                         title="Delete dataset"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
@@ -165,15 +165,15 @@ export default function DashboardPage() {
 
           {/* Recent Analysis Sessions Column */}
           <div className="py-6 pl-6">
-            <h2 className="font-heading text-[10px] font-bold uppercase tracking-wider text-black/60 mb-4">Recent Analyses</h2>
+            <h2 className="font-body text-xs font-medium text-claude-muted uppercase tracking-wider mb-4">Recent Analyses</h2>
 
             {loadingSessions ? (
               <div className="space-y-2">
-                <div className="h-12 w-full bg-black/10 animate-pulse-slow border border-black"></div>
-                <div className="h-12 w-full bg-black/10 animate-pulse-slow border border-black"></div>
+                <div className="h-14 w-full bg-claude-surface-card rounded-lg animate-pulse-slow border border-claude-hairline"></div>
+                <div className="h-14 w-full bg-claude-surface-card rounded-lg animate-pulse-slow border border-claude-hairline"></div>
               </div>
             ) : sessions.length === 0 ? (
-              <div className="border border-black border-dashed p-5 text-center font-body text-xs text-black/50 bg-white">
+              <div className="rounded-lg border border-claude-hairline border-dashed p-6 text-center font-body text-sm text-claude-muted bg-white">
                 No active analyses. Start one from a dataset.
               </div>
             ) : (
@@ -182,13 +182,13 @@ export default function DashboardPage() {
                   <Link
                     key={s.id}
                     href={`/session/${s.id}`}
-                    className="block border border-black p-3 hover:bg-black/5 transition-colors bg-white"
+                    className="block rounded-lg border border-claude-hairline p-4 hover:bg-claude-surface-soft transition-colors bg-white"
                   >
-                    <h3 className="font-heading text-xs font-bold uppercase text-black truncate leading-tight">{s.title || "Untitled analysis"}</h3>
-                    <div className="flex justify-between items-center font-body text-[10px] text-black/50 mt-1.5">
+                    <h3 className="font-body text-sm font-medium text-claude-ink truncate">{s.title || "Untitled analysis"}</h3>
+                    <div className="flex justify-between items-center font-body text-xs text-claude-muted mt-1.5">
                       <span className="truncate max-w-[120px]">{s.data_source_name || "Dataset"}</span>
                       <span className="flex items-center gap-1">
-                        <MessageSquare className="h-2.5 w-2.5" />
+                        <MessageSquare className="h-3 w-3" />
                         <span>{s.message_count} msgs</span>
                       </span>
                     </div>

@@ -11,7 +11,6 @@ import os
 import shutil
 import signal
 import subprocess
-import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -34,20 +33,29 @@ class ExecutionResult:
 
 class SandboxExecutor:
     _counter = 0
+    _workspace = "/workspace"
 
     def __init__(self):
         self.settings = get_settings()
+        os.makedirs(self._workspace, exist_ok=True)
 
     async def execute(self, code: str, data_file_path: str, file_format: str) -> ExecutionResult:
         ext = {"csv": "csv", "excel": "xlsx", "json": "json"}.get(file_format, "csv")
         start_time = time.time()
-        tmp_dir: str | None = None
 
         try:
             SandboxExecutor._counter += 1
-            tmp_dir = tempfile.mkdtemp(prefix=f"data_sandbox_{SandboxExecutor._counter}_")
-            script_path = os.path.join(tmp_dir, "script.py")
-            data_dest = os.path.join(tmp_dir, f"data.{ext}")
+            script_path = os.path.join(self._workspace, f"script_{SandboxExecutor._counter}.py")
+            data_dest = os.path.join(self._workspace, f"data.{ext}")
+            chart_path = os.path.join(self._workspace, "output_chart.json")
+
+            # Clean up any previous files
+            for f in [script_path, data_dest, chart_path]:
+                if os.path.exists(f):
+                    try:
+                        os.remove(f)
+                    except Exception:
+                        pass
 
             shutil.copy2(data_file_path, data_dest)
             with open(script_path, "w") as f:
@@ -59,7 +67,7 @@ class SandboxExecutor:
             python_cmd = "python3" if shutil.which("python3") else "python"
             proc = subprocess.run(
                 [python_cmd, script_path],
-                cwd=tmp_dir,
+                cwd=self._workspace,
                 capture_output=True,
                 text=True,
                 timeout=timeout_seconds,
@@ -72,7 +80,6 @@ class SandboxExecutor:
             exit_code = proc.returncode
 
             chart_json = None
-            chart_path = os.path.join(tmp_dir, "output_chart.json")
             if os.path.exists(chart_path):
                 try:
                     with open(chart_path, "r") as f:
@@ -104,10 +111,3 @@ class SandboxExecutor:
                 exit_code=1, stdout="", stderr=f"Sandbox error: {str(e)}",
                 chart_json=None, execution_ms=execution_ms, status="failed",
             )
-
-        finally:
-            if tmp_dir and os.path.exists(tmp_dir):
-                try:
-                    shutil.rmtree(tmp_dir, ignore_errors=True)
-                except Exception:
-                    pass

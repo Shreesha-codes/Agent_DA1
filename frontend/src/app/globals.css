@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: #000000;
+  background-color: #ffffff;
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* Page frame — black border around entire viewport */
+.page-frame {
+  border: 8px solid #000000;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .page-frame {
+    border-width: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-frame {
+    border-width: 2px;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d9d9dd;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #93939f;
+}
+
+/* Retro sticker rotation */
+.rotate-burst {
+  transform: rotate(-15deg);
+}
+
+/* Plotly chart overrides */
+.js-plotly-plot .plotly .modebar {
+  background-color: transparent !important;
+}
+
+.js-plotly-plot .plotly .main-svg {
+  background: transparent !important;
+}

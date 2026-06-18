@@ -21,6 +21,7 @@ from typing import Literal
 from uuid import uuid4
 
 import docker
+import requests
 from docker.errors import ContainerError, ImageNotFound, APIError
 
 from config import get_settings
@@ -119,30 +120,47 @@ class DockerExecutor:
                     cpu_quota=int(self.settings.SANDBOX_CPU_LIMIT * 100000),
                     read_only=True,
                     tmpfs={"/tmp": "size=100m"},
-                    remove=True,
-                    detach=False,
+                    detach=True,
                     stdout=True,
                     stderr=True,
-                    # Safety: timeout kills container
-                    # Docker SDK doesn't have a direct timeout, so we handle it separately
                 )
 
+                # Wait for completion with timeout
+                try:
+                    wait_result = container.wait(timeout=self.settings.DOCKER_EXECUTION_TIMEOUT_SECONDS)
+                except requests.exceptions.ReadTimeout:
+                    container.kill()
+                    execution_ms = int((time.time() - start_time) * 1000)
+                    container.remove()
+                    return ExecutionResult(
+                        exit_code=124,
+                        stdout="",
+                        stderr="Execution timed out. Try a more specific question or filter to a smaller data range.",
+                        chart_json=None,
+                        execution_ms=execution_ms,
+                        status="timeout",
+                    )
+
                 execution_ms = int((time.time() - start_time) * 1000)
-                stdout = container.decode("utf-8") if isinstance(container, bytes) else str(container)
-                stderr = ""
-                exit_code = 0
+                exit_code = wait_result.get("StatusCode", 1)
+
+                # Get logs
+                logs_stdout = container.logs(stdout=True, stderr=False)
+                logs_stderr = container.logs(stdout=False, stderr=True)
+                stdout = logs_stdout.decode("utf-8") if logs_stdout else ""
+                stderr = logs_stderr.decode("utf-8") if logs_stderr else ""
+
+                container.remove()
 
             except ContainerError as e:
                 execution_ms = int((time.time() - start_time) * 1000)
-                stdout = e.stderr.decode("utf-8") if isinstance(e.stderr, bytes) else str(e.stderr)
-                stderr = stdout
+                stdout = e.stdout.decode("utf-8") if isinstance(e.stdout, bytes) else str(e.stdout) if e.stdout else ""
+                stderr = e.stderr.decode("utf-8") if isinstance(e.stderr, bytes) else str(e.stderr) if e.stderr else ""
                 exit_code = e.exit_status
-                stdout = ""
 
             except APIError as e:
                 execution_ms = int((time.time() - start_time) * 1000)
 
-                # Check for OOM kill or timeout
                 if "out of memory" in str(e).lower() or "OOMKilled" in str(e):
                     return ExecutionResult(
                         exit_code=137,
@@ -160,17 +178,6 @@ class DockerExecutor:
                     chart_json=None,
                     execution_ms=execution_ms,
                     status="failed",
-                )
-
-            # Check timeout
-            if execution_ms > self.settings.DOCKER_EXECUTION_TIMEOUT_SECONDS * 1000:
-                return ExecutionResult(
-                    exit_code=124,
-                    stdout="",
-                    stderr="Execution timed out. Try a more specific question or filter to a smaller data range.",
-                    chart_json=None,
-                    execution_ms=execution_ms,
-                    status="timeout",
                 )
 
             # 6. Read chart JSON if it exists

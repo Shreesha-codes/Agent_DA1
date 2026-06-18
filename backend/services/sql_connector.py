@@ -6,6 +6,7 @@ import logging
 
 import pandas as pd
 import psycopg2
+from psycopg2 import sql as pg_sql
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -18,39 +19,34 @@ logger = logging.getLogger("data-agent.sql_connector")
 
 
 def encrypt_password(password: str) -> str:
-    """Encrypt a PostgreSQL password using AES-256-CBC."""
+    """Encrypt a PostgreSQL password using AES-256-GCM (authenticated encryption)."""
     settings = get_settings()
     key = bytes.fromhex(settings.POSTGRES_ENCRYPTION_KEY)
 
-    iv = os.urandom(16)
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    nonce = os.urandom(12)
+    cipher = Cipher(algorithms.AES(key), modes.GCM(nonce), backend=default_backend())
     encryptor = cipher.encryptor()
 
-    # PKCS7 padding
-    pad_length = 16 - (len(password.encode()) % 16)
-    padded = password.encode() + bytes([pad_length] * pad_length)
-
-    encrypted = encryptor.update(padded) + encryptor.finalize()
-    # Store as base64(iv + ciphertext)
-    return base64.b64encode(iv + encrypted).decode()
+    ciphertext = encryptor.update(password.encode()) + encryptor.finalize()
+    # Store as base64(nonce + ciphertext + tag)
+    return base64.b64encode(nonce + ciphertext + encryptor.tag).decode()
 
 
 def decrypt_password(encrypted: str) -> str:
-    """Decrypt a PostgreSQL password."""
+    """Decrypt a PostgreSQL password (AES-256-GCM)."""
     settings = get_settings()
     key = bytes.fromhex(settings.POSTGRES_ENCRYPTION_KEY)
 
     raw = base64.b64decode(encrypted)
-    iv = raw[:16]
-    ciphertext = raw[16:]
+    nonce = raw[:12]
+    tag = raw[-16:]
+    ciphertext = raw[12:-16]
 
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    cipher = Cipher(algorithms.AES(key), modes.GCM(nonce, tag), backend=default_backend())
     decryptor = cipher.decryptor()
 
-    padded = decryptor.update(ciphertext) + decryptor.finalize()
-    # Remove PKCS7 padding
-    pad_length = padded[-1]
-    return padded[:-pad_length].decode()
+    result = decryptor.update(ciphertext) + decryptor.finalize()
+    return result.decode()
 
 
 async def test_pg_connection(params) -> dict:
@@ -76,13 +72,15 @@ async def test_pg_connection(params) -> dict:
         schema = params.pg_schema or "public"
         table = params.pg_table
 
-        cursor.execute(
-            f"SELECT COUNT(*) FROM {schema}.{table}"
+        count_query = pg_sql.SQL("SELECT COUNT(*) FROM {}.{}").format(
+            pg_sql.Identifier(schema),
+            pg_sql.Identifier(table),
         )
+        cursor.execute(count_query)
         row_count = cursor.fetchone()[0]
 
         cursor.execute(
-            f"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = %s AND table_name = %s",
+            "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = %s AND table_name = %s",
             (schema, table),
         )
         column_count = cursor.fetchone()[0]
@@ -142,7 +140,10 @@ async def fetch_data_snapshot(data_source: dict) -> pd.DataFrame:
 
     schema = data_source.get("pg_schema", "public")
     table = data_source["pg_table"]
-    query = f"SELECT * FROM {schema}.{table} LIMIT 10000"
+    query = pg_sql.SQL("SELECT * FROM {}.{} LIMIT 10000").format(
+        pg_sql.Identifier(schema),
+        pg_sql.Identifier(table),
+    )
 
     df = pd.read_sql(query, conn)
     conn.close()

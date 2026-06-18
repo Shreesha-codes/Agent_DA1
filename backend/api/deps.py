@@ -2,6 +2,7 @@
 Shared FastAPI dependencies: authentication, database access.
 """
 
+import asyncio
 import logging
 from typing import Annotated
 
@@ -17,23 +18,25 @@ logger = logging.getLogger("data-agent.deps")
 # ── Cache for Clerk JWKS ─────────────────────────────────────────────────────
 _jwks_cache: dict | None = None
 _jwks_cache_time: float = 0
+_jwks_lock = asyncio.Lock()
 
 
 async def _fetch_clerk_jwks(jwks_url: str) -> dict:
-    """Fetch Clerk's JSON Web Key Set (cached for 1 hour)."""
+    """Fetch Clerk's JSON Web Key Set (cached for 1 hour, thread-safe)."""
     import time
     global _jwks_cache, _jwks_cache_time
 
-    now = time.time()
-    if _jwks_cache and (now - _jwks_cache_time) < 3600:
-        return _jwks_cache
+    async with _jwks_lock:
+        now = time.time()
+        if _jwks_cache and (now - _jwks_cache_time) < 3600:
+            return _jwks_cache
 
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(jwks_url)
-        resp.raise_for_status()
-        _jwks_cache = resp.json()
-        _jwks_cache_time = now
-        return _jwks_cache
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(jwks_url)
+            resp.raise_for_status()
+            _jwks_cache = resp.json()
+            _jwks_cache_time = now
+            return _jwks_cache
 
 
 async def verify_clerk_jwt(token: str, settings: Settings) -> str:

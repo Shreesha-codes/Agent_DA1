@@ -1,17 +1,21 @@
 """
-E2B Cloud Sandbox executor: runs Python code in an isolated cloud sandbox.
+Subprocess sandbox executor: runs Python code in a forked process with resource limits.
 
-Replaces Docker sandbox for deployment on PaaS (Render, Vercel, etc.).
-Requires E2B_API_KEY environment variable (free tier available).
+Safe enough for AI-generated analysis code. Not a security sandbox — do not
+run untrusted or arbitrary code from external users.
 """
 
 import json
 import logging
+import os
+import shutil
+import signal
+import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
-
-from e2b_code_interpreter import Sandbox as E2BSandbox
 
 from config import get_settings
 
@@ -29,7 +33,7 @@ class ExecutionResult:
 
 
 class SandboxExecutor:
-    """Execute Python code using E2B Cloud Sandbox."""
+    _counter = 0
 
     def __init__(self):
         self.settings = get_settings()
@@ -37,36 +41,43 @@ class SandboxExecutor:
     async def execute(self, code: str, data_file_path: str, file_format: str) -> ExecutionResult:
         ext = {"csv": "csv", "excel": "xlsx", "json": "json"}.get(file_format, "csv")
         start_time = time.time()
+        tmp_dir: str | None = None
 
-        sandbox = None
         try:
-            sandbox = E2BSandbox.create()
+            SandboxExecutor._counter += 1
+            tmp_dir = tempfile.mkdtemp(prefix=f"data_sandbox_{SandboxExecutor._counter}_")
+            script_path = os.path.join(tmp_dir, "script.py")
+            data_dest = os.path.join(tmp_dir, f"data.{ext}")
 
-            with open(data_file_path, "rb") as f:
-                sandbox.files.write(f"/workspace/data.{ext}", f.read())
+            shutil.copy2(data_file_path, data_dest)
+            with open(script_path, "w") as f:
+                f.write(code)
 
-            execution = sandbox.run_code(
-                code,
-                timeout=self.settings.SANDBOX_EXECUTION_TIMEOUT_SECONDS,
+            timeout_seconds = self.settings.SANDBOX_EXECUTION_TIMEOUT_SECONDS
+
+            proc = subprocess.run(
+                ["python", script_path],
+                cwd=tmp_dir,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+                env={"PYTHONIOENCODING": "utf-8"},
             )
 
             execution_ms = int((time.time() - start_time) * 1000)
-
-            stdout = "\n".join(execution.logs.stdout) if execution.logs.stdout else ""
-            stderr = "\n".join(execution.logs.stderr) if execution.logs.stderr else ""
-            if execution.error:
-                error_text = str(execution.error)
-                stderr = (stderr + "\n" + error_text).strip()
+            stdout = proc.stdout or ""
+            stderr = proc.stderr or ""
+            exit_code = proc.returncode
 
             chart_json = None
-            result = sandbox.commands.run("cat /workspace/output_chart.json")
-            if result.exit_code == 0 and result.stdout:
+            chart_path = os.path.join(tmp_dir, "output_chart.json")
+            if os.path.exists(chart_path):
                 try:
-                    chart_json = json.loads(result.stdout)
-                except json.JSONDecodeError:
-                    logger.warning("Failed to parse chart JSON from sandbox")
+                    with open(chart_path, "r") as f:
+                        chart_json = json.load(f)
+                except (json.JSONDecodeError, OSError) as e:
+                    logger.warning("Failed to parse chart JSON: %s", e)
 
-            exit_code = 1 if execution.error else 0
             status = "success" if exit_code == 0 else "failed"
 
             return ExecutionResult(
@@ -78,29 +89,23 @@ class SandboxExecutor:
                 status=status,
             )
 
+        except subprocess.TimeoutExpired:
+            execution_ms = int((time.time() - start_time) * 1000)
+            return ExecutionResult(
+                exit_code=124, stdout="", stderr="Execution timed out.",
+                chart_json=None, execution_ms=execution_ms, status="timeout",
+            )
+
         except Exception as e:
             execution_ms = int((time.time() - start_time) * 1000)
-            error_str = str(e).lower()
-
-            if "timeout" in error_str:
-                return ExecutionResult(
-                    exit_code=124, stdout="", stderr="Execution timed out.",
-                    chart_json=None, execution_ms=execution_ms, status="timeout",
-                )
-            if "api key" in error_str or "unauthorized" in error_str:
-                return ExecutionResult(
-                    exit_code=1, stdout="", stderr="Sandbox API key is invalid or missing. Set E2B_API_KEY.",
-                    chart_json=None, execution_ms=execution_ms, status="failed",
-                )
-
             return ExecutionResult(
                 exit_code=1, stdout="", stderr=f"Sandbox error: {str(e)}",
                 chart_json=None, execution_ms=execution_ms, status="failed",
             )
 
         finally:
-            if sandbox:
+            if tmp_dir and os.path.exists(tmp_dir):
                 try:
-                    sandbox.kill()
+                    shutil.rmtree(tmp_dir, ignore_errors=True)
                 except Exception:
                     pass

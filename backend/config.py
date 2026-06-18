@@ -30,14 +30,8 @@ class Settings(BaseSettings):
     MAX_RETRY_ATTEMPTS: int = 3
     DATA_CACHE_DIR: str = "/tmp/data_cache"
 
-    # E2B Cloud Sandbox
-    E2B_API_KEY: str = ""
+    # Subprocess Sandbox — local code execution with timeout
     SANDBOX_EXECUTION_TIMEOUT_SECONDS: int = 30
-
-    # Legacy Docker Sandbox — conservative limits to protect host system
-    SANDBOX_IMAGE_NAME: str = "data-sandbox:latest"
-    SANDBOX_MEMORY_LIMIT: str = "256m"
-    SANDBOX_CPU_LIMIT: float = 0.5
 
     @property
     def allowed_origins_list(self) -> list[str]:

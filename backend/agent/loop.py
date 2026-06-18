@@ -223,10 +223,15 @@ async def run_analysis(
         chart_title = "Analysis Result"
         chart_caption = ""
         if last_result.chart_json:
-            layout = last_result.chart_json.get("layout", {})
-            chart_title = layout.get("title", {})
-            if isinstance(chart_title, dict):
-                chart_title = chart_title.get("text", "Analysis Result")
+            chart_data = last_result.chart_json
+            if isinstance(chart_data, list):
+                # Plotly sometimes returns list of traces; wrap in layout dict
+                chart_data = {"data": chart_data}
+            if isinstance(chart_data, dict):
+                layout = chart_data.get("layout", {})
+                chart_title = layout.get("title", {})
+                if isinstance(chart_title, dict):
+                    chart_title = chart_title.get("text", "Analysis Result")
 
         return {
             "narrative": narrative,

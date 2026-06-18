@@ -94,9 +94,18 @@ async def _run_profiling(data_source_id: str, user_id: str):
 
         elif ds["source_type"] == "postgres":
             from services.sql_connector import fetch_data_snapshot
+            from services.storage import get_cached_path
             df = await fetch_data_snapshot(ds)
             if df.empty:
                 raise ValueError(f"Table '{ds.get('pg_schema', 'public')}.{ds['pg_table']}' exists but has no rows")
+
+            # Save as CSV for agent sandbox access
+            import os
+            from config import get_settings
+            settings = get_settings()
+            os.makedirs(settings.DATA_CACHE_DIR, exist_ok=True)
+            cache_path = os.path.join(settings.DATA_CACHE_DIR, f"{data_source_id}.csv")
+            df.to_csv(cache_path, index=False)
 
         else:
             raise ValueError(f"Unknown source type: {ds['source_type']}")

@@ -11,15 +11,5 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     restart: unless-stopped
-    depends_on:
-      - sandbox
-
-  sandbox:
-    build:
-      context: ./backend/sandbox
-    image: data-sandbox:latest
-    container_name: data-sandbox-builder
-    command: echo "Sandbox image built and ready"

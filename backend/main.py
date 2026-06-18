@@ -66,7 +66,7 @@ app.include_router(messages.router, prefix="/api", tags=["Messages"])
 @app.get("/health", tags=["Health"])
 async def health_check():
     """Health check endpoint — no auth required."""
-    health = {"status": "ok", "sandbox": "e2b", "database": "unknown"}
+    health = {"status": "ok", "sandbox": "subprocess", "database": "unknown"}
 
     # Check Supabase
     try:

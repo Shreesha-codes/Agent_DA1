@@ -64,6 +64,9 @@ app.include_router(messages.router, prefix="/api", tags=["Messages"])
 
 # ── Health Check ─────────────────────────────────────────────────────────────
 @app.get("/health", tags=["Health"])
+@app.get("/health/", tags=["Health"])
+@app.head("/health", tags=["Health"])
+@app.head("/health/", tags=["Health"])
 async def health_check():
     """Health check endpoint — no auth required."""
     health = {"status": "ok", "sandbox": "subprocess", "database": "unknown"}
